@@ -70,8 +70,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>D:\temp\课\图学\freeglut\include\GL;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\temp\课\图学\freeglut\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\temp\class\图学\freeglut\include\GL;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\temp\class\图学\freeglut\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>D:\temp\class\图学\freeglut\include\GL;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\temp\class\图学\freeglut\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>D:\temp\class\图学\freeglut\include\GL;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\temp\class\图学\freeglut\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>D:\temp\class\图学\freeglut\include\GL;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\temp\class\图学\freeglut\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -126,7 +138,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\hw_1.cpp" />
+    <ClCompile Include="..\..\hw_1.cpp">
+      <DeploymentContent>false</DeploymentContent>
+    </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
