@@ -3,12 +3,15 @@
 /***freeglut***/
 #include <freeglut.h>
 #include <iostream>
+
+#define PI 3.14159265
  
 void ChangeSize(int , int );					 
 void RenderScene(void);		
 void buildPopupMenu();
 void myKeyboard(unsigned char, int, int);
 void mySpaceialKey(int, int, int);
+void drawCoordinates();
 double tx, tz, ty;
 double thetax, thetaz, thetay;
 int main(int argc, char** argv) 
@@ -38,23 +41,17 @@ void myKeyboard(unsigned char key, int x, int y)
 {
 	switch (key)
 	{
-	case 'a':
+	case 'w':
 		thetax -= 3;
 		break;
-	case 'd':
+	case 's':
 		thetax += 3;
 		break;
-	case 'w':
+	case 'a':
 		thetay += 3;
 		break;
-	case 's':
+	case 'd':
 		thetay -= 3;
-		break;
-	case 'z':
-		thetaz += 3;
-		break;
-	case 'x':
-		thetaz -= 3;
 		break;
 	default:
 		break;
@@ -120,21 +117,27 @@ void ChangeSize(int w, int h)
    glLoadIdentity(); 
 } 
 void RenderScene(void) 
-{ 
-   glClearColor(1.0, 1.0, 1.0, 1.0);  
-   glClear(GL_COLOR_BUFFER_BIT);
-   glMatrixMode(GL_MODELVIEW); 
-   glLoadIdentity(); 
-
-   glRotatef(thetax, 1, 0, 0);
-   glRotatef(thetay, 0, 1, 0);
-   glRotatef(thetaz, 0, 0, 1);
-
-
+{
+GLfloat rotMatrix[] = { 1.0, 0.0, 0.0, 0.0,
+						0.0, 1.0, 0.0, 0.0,
+						0.0, 0.0, 1.0, 0.0,
+						0.0, 0.0, 0.0, 1.0 };
+   glClearColor(1.0, 1.0, 1.0, 1.0);
+   glClearDepth(1.0f);
+   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+   glMatrixMode(GL_MODELVIEW);
+   glLoadIdentity();
+   glMatrixMode(rotMatrix);
+   glMatrixMode(translateMatrix);
+   drawCoordinates();
    gluLookAt(0,0,1.0f,0,0,0,0,1,0);
 
-   glTranslatef(tx, ty, tz);
+   //glRotatef(thetax, 1, 0, 0);
+   //glRotatef(thetay, 0, 1, 0);
+   //glRotatef(thetaz, 0, 0, 1);
+   //glTranslatef(tx, ty, tz);
 
+   glutSolidCube(6);
    glBegin(GL_TRIANGLES); 
 	////1
 	//  glColor3f( 1, 0, 0);glVertex3f( -4, 4, 4); 
@@ -145,7 +148,6 @@ void RenderScene(void)
  //     glColor3f( 1, 0, 0);glVertex3f( -4, 4, 4); 
  //     glColor3f( 1, 0, 0);glVertex3f(-4, -4, 4);
 
-	////2
 	//  glColor3f(0, 1, 0); glVertex3f(-4, 4, 4);
 	//  glColor3f(0, 1, 0); glVertex3f(-4, 4, -4);
 	//  glColor3f(0, 1, 0); glVertex3f(4, 4, -4);
@@ -154,7 +156,6 @@ void RenderScene(void)
 	//  glColor3f(0, 1, 0); glVertex3f(4, 4, -4);
 	//  glColor3f(0, 1, 0); glVertex3f(4, 4, 4);
 
-	//  //3
 	//  glColor3f(0, 0, 1); glVertex3f(-4, 4, -4);
 	//  glColor3f(0, 0, 1); glVertex3f(-4, 4, 4);
 	//  glColor3f(0, 0, 1); glVertex3f(-4, -4, 4);
@@ -163,9 +164,9 @@ void RenderScene(void)
 	//  glColor3f(0, 0, 1); glVertex3f(-4, -4, 4);
 	//  glColor3f(0, 0, 1); glVertex3f(-4, -4, -4);
 
-   //1
+   //2
    
-	  glColor3f(1, 0, 0); glVertex3f(4, 0, 4);
+	  /*glColor3f(1, 0, 0); glVertex3f(4, 0, 4);
 	  glColor3f(1, 0, 0); glVertex3f(-4, 0, 4);
 	  glColor3f(1, 0, 0); glVertex3f(-4, 0, -4);
 
@@ -187,14 +188,30 @@ void RenderScene(void)
 
 	  glColor3f(0, 1, 1); glVertex3f(0, 4, 0);
 	  glColor3f(0, 1, 1); glVertex3f(4, 0, 4);
-	  glColor3f(0, 1, 1); glVertex3f(-4, 0, 4);
+	  glColor3f(0, 1, 1); glVertex3f(-4, 0, 4);*/
 
+	//3
 
-
-
-
-	//2
 	 
 	  glEnd();
 	  glutSwapBuffers();
+}
+void drawCoordinates()
+{
+	glLineWidth(3.0f);
+	glColor3f(10.0f, 0.0f, 0.0f); 
+	glBegin(GL_LINES);
+	glVertex3f(0.0f, 0.0f, 0.0f);
+	glVertex3f(10.0f, 0.0f, 0.0f);
+	glEnd();
+	glColor3f(0.0, 10.0, 0.0); 
+	glBegin(GL_LINES);
+	glVertex3f(0.0f, 0.0f, 0.0f);
+	glVertex3f(0.0f, 10.0f, 0.0f);
+	glEnd();
+	glColor3f(0.0, 0.0, 10.0);
+	glBegin(GL_LINES);
+	glVertex3f(0.0f, 0.0f, 0.0f);
+	glVertex3f(0.0f, 0.0f, 10.0f);
+	glEnd();
 }
