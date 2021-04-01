@@ -5,23 +5,23 @@
 #include <iostream>
 
 #define PI 3.14159265
- 
+double degreex = 0, degreey = 0, degreez = 0;
 void ChangeSize(int , int );					 
 void RenderScene(void);		
 void buildPopupMenu();
 void myKeyboard(unsigned char, int, int);
 void mySpaceialKey(int, int, int);
 void drawCoordinates();
-double tx, tz, ty;
-double thetax, thetaz, thetay;
+float tx, tz, ty;
+float x, y, z;
 int main(int argc, char** argv) 
-{ 
+{
 	tx = 0;
 	ty = 0;
 	tz = 0;
-	thetax = 0;
-	thetaz = 0; 
-	thetay = 0;
+	x = 0;
+	y = 0; 
+	z = 0;
    glutInit(&argc, argv); 
    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);  
    glutInitWindowSize(400,400);				 
@@ -42,16 +42,22 @@ void myKeyboard(unsigned char key, int x, int y)
 	switch (key)
 	{
 	case 'w':
-		thetax -= 3;
+		degreey -= 10;
 		break;
 	case 's':
-		thetax += 3;
+		degreey += 10;
 		break;
 	case 'a':
-		thetay += 3;
+		degreex -= 10;
 		break;
 	case 'd':
-		thetay -= 3;
+		degreex += 10;
+		break;
+	case 'q':
+		degreez -= 10;
+		break;
+	case 'e':
+		degreez += 10;
 		break;
 	default:
 		break;
@@ -118,18 +124,37 @@ void ChangeSize(int w, int h)
 } 
 void RenderScene(void) 
 {
-GLfloat rotMatrix[] = { 1.0, 0.0, 0.0, 0.0,
-						0.0, 1.0, 0.0, 0.0,
-						0.0, 0.0, 1.0, 0.0,
-						0.0, 0.0, 0.0, 1.0 };
+	GLfloat translateMatrix[] = {	1.0, 0.0, 0.0, 0.0,
+									0.0, 1.0, 0.0, 0.0,
+									0.0, 0.0, 1.0, 0.0,
+									tx, ty, tz, 1.0 };
+	GLfloat rotMatrixx[] = { cos(degreey * PI / 180.0), 0.0, sin(degreey * PI / 180.0),0.0,
+							 0.0,1.0, 0.0,0.0,
+							 -sin(degreey * PI / 180.0),0.0, cos(degreey * PI / 180.0),0.0,
+							 0.0,0.0, 0.0,1.0 };//XÖáÐý×ª 
+
+	GLfloat rotMatrixy[] = { 1.0, 0.0, 0.0,0.0,
+						 0.0,cos(degreex * PI / 180.0), -sin(degreex * PI / 180.0),0.0,
+						 0.0,sin(degreex * PI / 180.0), cos(degreex * PI / 180.0),0.0,
+						 0.0,0.0, 0.0,1.0 };//YÖáÐý×ª 
+
+	GLfloat rotMatrixz[] = { cos(degreez * PI / 180.0), -sin(degreez * PI / 180.0), 0.0,0.0,
+						     sin(degreez * PI / 180.0),cos(degreez * PI / 180.0), 0.0,	0.0,
+						     0.0,0.0,1.0,0.0,
+						     0.0,0.0, 0.0,1.0 };  //ZÖáÐý×ª 
+	
    glClearColor(1.0, 1.0, 1.0, 1.0);
    glClearDepth(1.0f);
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
    glMatrixMode(GL_MODELVIEW);
    glLoadIdentity();
-   glMatrixMode(rotMatrix);
-   glMatrixMode(translateMatrix);
    drawCoordinates();
+
+   glMultMatrixf(rotMatrixx);
+   glMultMatrixf(rotMatrixy);
+   glMultMatrixf(rotMatrixz);
+
+   glMultMatrixf(translateMatrix);
    gluLookAt(0,0,1.0f,0,0,0,0,1,0);
 
    //glRotatef(thetax, 1, 0, 0);
@@ -137,7 +162,7 @@ GLfloat rotMatrix[] = { 1.0, 0.0, 0.0, 0.0,
    //glRotatef(thetaz, 0, 0, 1);
    //glTranslatef(tx, ty, tz);
 
-   glutSolidCube(6);
+   glColor3f(1, 0, 1); glutSolidCube(6);
    glBegin(GL_TRIANGLES); 
 	////1
 	//  glColor3f( 1, 0, 0);glVertex3f( -4, 4, 4); 
