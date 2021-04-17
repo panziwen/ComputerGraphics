@@ -5,10 +5,16 @@
 #include <iostream>
 
 #define PI 3.14159265
-double degreex = 0, degreey = 0, degreez = 0;
+#define MENU_OBJECT 0
+#define MENU_RENDER_MODE 1
+#define MENU_COLOR_MODE 2
+#define MENU_BOUNDINGBOX 3
+#define MENU_AXIS 4
+float degreex = 0, degreey = 0, degreez = 0;
 void ChangeSize(int , int );					 
 void RenderScene(void);		
-void buildPopupMenu();
+void selectFromMenu(int);
+int buildPopupMenu(void);
 void myKeyboard(unsigned char, int, int);
 void mySpaceialKey(int, int, int);
 void myMouse(int, int, int x, int y);
@@ -16,8 +22,8 @@ void drawCoordinates();
 void line();
 float tx, tz, ty;
 float x=0, y=0, z=0;
-float posx, posy;
-int px, py;
+float posx=200, posy=0;
+int px=200, py=0;
 int main(int argc, char** argv) 
 {
 	tx = 0;
@@ -39,6 +45,10 @@ int main(int argc, char** argv)
    glutKeyboardFunc(myKeyboard);
    glutSpecialFunc(mySpaceialKey);
    glutDisplayFunc(RenderScene);
+
+   buildPopupMenu();
+   glutAttachMenu(GLUT_RIGHT_BUTTON);
+
    glutMainLoop();	
    return 0; 
 } 
@@ -107,15 +117,6 @@ void menuSelect(int option)
 	}
 }
 
-void buildPopupMenu()
-{
-	int menu_id;
-	menu_id = glutCreateMenu(menuSelect);
-    glutAddMenuEntry("Flat",0);
-    glutAddMenuEntry("Smooth",1);
-	glutAttachMenu(GLUT_RIGHT_BUTTON);
-
-}
 
 void ChangeSize(int w, int h) 
 { 
@@ -180,15 +181,13 @@ void RenderScene(void)
    glClear(GL_COLOR_BUFFER_BIT);
    glMatrixMode(GL_MODELVIEW);
    glLoadIdentity();
-   line();
    drawCoordinates();
-   line();
   /* glMultMatrixf(rotMatrixx);
    glMultMatrixf(rotMatrixy);
    glMultMatrixf(rotMatrixz);*/
    glMultMatrixf(m);
-
    glMultMatrixf(translateMatrix);
+   line();
    gluLookAt(0,0,1.0f,0,0,0,0,1,0);
 
    //glRotatef(thetax, 1, 0, 0);
@@ -197,7 +196,7 @@ void RenderScene(void)
    //glTranslatef(tx, ty, tz);
 
    glColor3f(1, 0, 1); glutSolidCube(6);
-   glBegin(GL_TRIANGLES); 
+   //glBegin(GL_TRIANGLES); 
 	////1
 	//  glColor3f( 1, 0, 0);glVertex3f( -4, 4, 4); 
  //     glColor3f( 1, 0, 0);glVertex3f(4, -4, 4);     
@@ -292,6 +291,62 @@ void myMouse(int button, int state, int x, int y)
 	{
 		posx = x;
 		posy = y;
+	}
+}
+int buildPopupMenu(void)
+{
+	int menu, submenu1, submenu2, submenu3, submenu4, submenu5;
+
+	submenu1 = glutCreateMenu(selectFromMenu);
+	glutAddMenuEntry("Cube", MENU_OBJECT);
+	glutAddMenuEntry("Teddy", MENU_RENDER_MODE);
+	glutAddMenuEntry("Bear", MENU_COLOR_MODE);
+	glutAddMenuEntry("Lamp", MENU_BOUNDINGBOX); 
+	submenu2 = glutCreateMenu(selectFromMenu);
+	glutAddMenuEntry("Point", MENU_OBJECT);
+	glutAddMenuEntry("Line", MENU_RENDER_MODE);
+	glutAddMenuEntry("Face", MENU_COLOR_MODE);
+	submenu3 = glutCreateMenu(selectFromMenu);
+	glutAddMenuEntry("Single Color", MENU_OBJECT);
+	glutAddMenuEntry("Random Colors", MENU_RENDER_MODE);
+	submenu4 = glutCreateMenu(selectFromMenu);
+	glutAddMenuEntry("On", MENU_OBJECT);
+	glutAddMenuEntry("Off", MENU_RENDER_MODE);
+	submenu5 = glutCreateMenu(selectFromMenu);
+	glutAddMenuEntry("On", MENU_OBJECT);
+	glutAddMenuEntry("Off", MENU_RENDER_MODE);
+
+	menu = glutCreateMenu(selectFromMenu);
+	glutAddSubMenu("Object", submenu1);
+	glutAddSubMenu("Render Mode", submenu2);
+	glutAddSubMenu("Color Mode", submenu3);
+	glutAddSubMenu("Bounding Box", submenu4);
+	glutAddSubMenu("Axis", submenu5);
+
+
+	return menu;
+}
+void selectFromMenu(int option)
+{
+	switch (option) {
+	case MENU_OBJECT:
+		//......
+		break;
+	case MENU_RENDER_MODE:
+		//....
+		break;
+	case MENU_COLOR_MODE:
+		//....
+		break;
+	case MENU_BOUNDINGBOX:
+		//....
+		break;
+	case MENU_AXIS:
+		//....
+		break;
+	default:
+		break;
+
 	}
 }
 
