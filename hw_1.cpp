@@ -2,14 +2,25 @@
 #include <stdlib.h>
 /***freeglut***/
 #include <freeglut.h>
+#include <time.h>
 #include <iostream>
-
+#include "ObjLoader.h"
+using namespace std;
+string f;
 #define PI 3.14159265
-#define MENU_OBJECT 0
-#define MENU_RENDER_MODE 1
-#define MENU_COLOR_MODE 2
-#define MENU_BOUNDINGBOX 3
-#define MENU_AXIS 4
+#define GOURD 0
+#define LAMP 1
+#define OCTAHEDRON 2
+#define TEAPOT 3
+#define POINT 4
+#define LINE 5
+#define FACE 6
+#define SINGLE 7
+#define RANDOM 8
+#define ON 9
+#define OFF 10
+int random = 0;
+GLfloat sun_light_diffuse[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 float degreex = 0, degreey = 0, degreez = 0;
 void ChangeSize(int , int );					 
 void RenderScene(void);		
@@ -24,6 +35,7 @@ float tx, tz, ty;
 float x=0, y=0, z=0;
 float posx=200, posy=0;
 int px=200, py=0;
+int dtype = 0, cctype = 0;
 int main(int argc, char** argv) 
 {
 	tx = 0;
@@ -45,7 +57,6 @@ int main(int argc, char** argv)
    glutKeyboardFunc(myKeyboard);
    glutSpecialFunc(mySpaceialKey);
    glutDisplayFunc(RenderScene);
-
    buildPopupMenu();
    glutAttachMenu(GLUT_RIGHT_BUTTON);
 
@@ -99,6 +110,18 @@ void mySpaceialKey(int key, int x, int y)
 		break;
 	}
 	glutPostRedisplay();
+}
+void setLightRes() {
+	GLfloat sun_light_position[] = { 0.0f, 0.0f, 0.0f, 1.0f }; //光源的位置在世界坐标系圆心，齐次坐标形式
+	GLfloat sun_light_ambient[] = { 0.0f, 0.0f, 0.0f, 1.0f }; //RGBA模式的环境光，为0
+	//GLfloat sun_light_diffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f }; //RGBA模式的漫反射光，全白�?
+	GLfloat sun_light_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };  //RGBA模式下的镜面�?，全白光
+	//glLightfv(GL_LIGHT0, GL_POSITION, sun_light_position);
+	//glLightfv(GL_LIGHT6, GL_AMBIENT, sun_light_ambient);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, sun_light_diffuse);
+	//glLightfv(GL_LIGHT1, GL_SPECULAR, sun_light_specular);
+	glEnable(GL_LIGHTING); //启用光源
+	glEnable(GL_LIGHT0);   //使用指定灯光
 }
 void menuSelect(int option)
 {
@@ -181,7 +204,7 @@ void RenderScene(void)
    glClear(GL_COLOR_BUFFER_BIT);
    glMatrixMode(GL_MODELVIEW);
    glLoadIdentity();
-   drawCoordinates();
+   //drawCoordinates();
   /* glMultMatrixf(rotMatrixx);
    glMultMatrixf(rotMatrixy);
    glMultMatrixf(rotMatrixz);*/
@@ -189,13 +212,16 @@ void RenderScene(void)
    glMultMatrixf(translateMatrix);
    line();
    gluLookAt(0,0,1.0f,0,0,0,0,1,0);
-
+   ObjLoader objModel = ObjLoader(f);
+   objModel.type(dtype);
+   objModel.Draw();
+   setLightRes();
    //glRotatef(thetax, 1, 0, 0);
    //glRotatef(thetay, 0, 1, 0);
    //glRotatef(thetaz, 0, 0, 1);
    //glTranslatef(tx, ty, tz);
 
-   glColor3f(1, 0, 1); glutSolidCube(6);
+   //glColor3f(1, 0, 1); glutSolidCube(6);
    //glBegin(GL_TRIANGLES); 
 	////1
 	//  glColor3f( 1, 0, 0);glVertex3f( -4, 4, 4); 
@@ -295,33 +321,29 @@ void myMouse(int button, int state, int x, int y)
 }
 int buildPopupMenu(void)
 {
-	int menu, submenu1, submenu2, submenu3, submenu4, submenu5;
+	int menu, submenu1, submenu2, submenu3, submenu4;
 
 	submenu1 = glutCreateMenu(selectFromMenu);
-	glutAddMenuEntry("Cube", MENU_OBJECT);
-	glutAddMenuEntry("Teddy", MENU_RENDER_MODE);
-	glutAddMenuEntry("Bear", MENU_COLOR_MODE);
-	glutAddMenuEntry("Lamp", MENU_BOUNDINGBOX); 
+	glutAddMenuEntry("Gourd", GOURD);
+	glutAddMenuEntry("Lamp", LAMP);
+	glutAddMenuEntry("Octahedron", OCTAHEDRON);
+	glutAddMenuEntry("Teapot", TEAPOT); 
 	submenu2 = glutCreateMenu(selectFromMenu);
-	glutAddMenuEntry("Point", MENU_OBJECT);
-	glutAddMenuEntry("Line", MENU_RENDER_MODE);
-	glutAddMenuEntry("Face", MENU_COLOR_MODE);
+	glutAddMenuEntry("Point", POINT);
+	glutAddMenuEntry("Line", LINE);
+	glutAddMenuEntry("Face", FACE);
 	submenu3 = glutCreateMenu(selectFromMenu);
-	glutAddMenuEntry("Single Color", MENU_OBJECT);
-	glutAddMenuEntry("Random Colors", MENU_RENDER_MODE);
+	glutAddMenuEntry("Single Color", SINGLE);
+	glutAddMenuEntry("Random Colors", RANDOM);
 	submenu4 = glutCreateMenu(selectFromMenu);
-	glutAddMenuEntry("On", MENU_OBJECT);
-	glutAddMenuEntry("Off", MENU_RENDER_MODE);
-	submenu5 = glutCreateMenu(selectFromMenu);
-	glutAddMenuEntry("On", MENU_OBJECT);
-	glutAddMenuEntry("Off", MENU_RENDER_MODE);
+	glutAddMenuEntry("On", ON);
+	glutAddMenuEntry("Off", OFF);
 
 	menu = glutCreateMenu(selectFromMenu);
 	glutAddSubMenu("Object", submenu1);
 	glutAddSubMenu("Render Mode", submenu2);
 	glutAddSubMenu("Color Mode", submenu3);
 	glutAddSubMenu("Bounding Box", submenu4);
-	glutAddSubMenu("Axis", submenu5);
 
 
 	return menu;
@@ -329,24 +351,80 @@ int buildPopupMenu(void)
 void selectFromMenu(int option)
 {
 	switch (option) {
-	case MENU_OBJECT:
+	case GOURD:
+		f = "D:/temp/class/ComputerGraphics/obj4/gourd.obj";
 		//......
 		break;
-	case MENU_RENDER_MODE:
+	case LAMP:
+		f = "D:/temp/class/ComputerGraphics/obj4/lamp.obj";
 		//....
 		break;
-	case MENU_COLOR_MODE:
+	case OCTAHEDRON:
+		f = "D:/temp/class/ComputerGraphics/obj4/octahedron.obj";
 		//....
 		break;
-	case MENU_BOUNDINGBOX:
+	case TEAPOT:
+		f = "D:/temp/class/ComputerGraphics/obj4/teapot.obj";
 		//....
 		break;
-	case MENU_AXIS:
+	case POINT:
+		dtype = 4;
+		//....
+		break;
+	case LINE:
+		dtype = 5;
+		//......
+		break;
+	case FACE:
+		dtype = 6;
+		//....
+		break;
+	case SINGLE:
+		sun_light_diffuse[0] = 1;
+		sun_light_diffuse[1] = 1;
+		sun_light_diffuse[2] = 1;
+		//....
+		break;
+	case RANDOM:
+		srand(time(0));
+		random = rand() % 5;
+		if (random == 0) {//��ɫ
+			sun_light_diffuse[0] = 0;
+			sun_light_diffuse[1] = 0;
+			sun_light_diffuse[2] = 1;
+		}
+		else if (random == 1) {//��ɫ
+			sun_light_diffuse[0] = 0;
+			sun_light_diffuse[1] = 1;
+			sun_light_diffuse[2] = 0;
+		}
+		else if (random == 2) {//��ɫ
+			sun_light_diffuse[0] = 1;
+			sun_light_diffuse[1] = 0;
+			sun_light_diffuse[2] = 0;
+		}
+		else if (random == 3) {//��ɫ
+			sun_light_diffuse[0] = 1;
+			sun_light_diffuse[1] = 0;
+			sun_light_diffuse[2] = 1;
+		}
+		else if (random == 4) {//��ɫ
+			sun_light_diffuse[0] = 1;
+			sun_light_diffuse[1] = 1;
+			sun_light_diffuse[2] = 0;
+		}
+		//....
+		break;
+	case ON:
+		//....
+		break;
+	case OFF:
 		//....
 		break;
 	default:
 		break;
 
 	}
+	glutPostRedisplay();
 }
 
