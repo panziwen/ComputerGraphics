@@ -20,7 +20,6 @@ int buildPopupMenu(void);
 void myKeyboard(unsigned char, int, int);
 void mySpaceialKey(int, int, int);
 void myMouse(int, int, int x, int y);
-void drawCoordinates();
 void line();
 int main(int argc, char** argv) 
 {
@@ -87,7 +86,7 @@ void RenderScene(void)
 	}
 	if (lx1!=0&&ly1!=0&&lx2!=0&&ly2!=0)
 	{
-		drawCoordinates();
+		line();
 	}
 	glEnd();
 	glFlush();
@@ -105,17 +104,165 @@ void RenderScene(void)
 	
 	glLoadIdentity();
 }
-void drawCoordinates()
+void drawR(int x, int y)
 {
-	glColor3f(1, 1, 1); 
+	glBegin(GL_TRIANGLES);
+	glColor3f(1, 1, 1); glVertex2d(int(x), int(y));
+	glColor3f(1, 1, 1); glVertex2d(int(x), int(y) + 1);
+	glColor3f(1, 1, 1); glVertex2d(int(x) + 1, int(y) + 1);
+	glColor3f(1, 1, 1); glVertex2d(int(x), int(y));
+	glColor3f(1, 1, 1); glVertex2d(int(x) + 1, int(y) + 1);
+	glColor3f(1, 1, 1); glVertex2d(int(x) + 1, int(y));
+	
+}
+void line()
+{
+	int x0 = lx1, x1 = lx2;
+	int y0 = ly1, y1 = ly2;
+	int dx = lx2 - lx1, dy = ly2 - ly1;
+	int d = 2 * dy - dx;
+	int delE = 2 * dy;
+	int delNE = 2 * (dy - dx);
+	float m =float(dy) / dx;
+	glColor3f(1, 1, 1);
 	glBegin(GL_LINES);
 	glVertex2f(lx1, ly1);
 	glVertex2f(lx2, ly2);
 	glEnd();
-}
-void line()
-{
-	
+	if (m >= 0 && m <= 1)
+	{
+		while (x0 < x1)
+		{
+			if (d <= 0)
+			{
+				d += delE;
+				x0 = x0 + 1;
+			}
+			else
+			{
+				d += delNE;
+				x0 = x0 + 1;
+				y0 = y0 + 1;
+			}
+			drawR(x0, y0);
+		}
+		while (x1 < x0)
+		{
+			if (d <= 0)
+			{
+				d += delNE;
+				x1 = x1 + 1;
+				y1 = y1 + 1;
+			}
+			else
+			{
+				d += delE;
+				x1 = x1 + 1;
+			}
+			drawR(x1, y1);
+		}
+	}
+	else if (m <= 0 && m >= -1)
+	{
+		while (x0 < x1)
+		{
+			if (d >= 0)
+			{
+				d += delE;
+				x0 = x0 + 1;
+			}
+			else
+			{
+				d -= delNE;
+				x0 = x0 + 1;
+				y0 = y0 - 1;
+			}
+			drawR(x0, y0);
+		}
+		while (x1 < x0)
+		{
+			if (d >= 0)
+			{
+				d -= delNE;
+				x1 = x1 + 1;
+				y1 = y1 - 1;
+			}
+			else
+			{
+				d += delE;
+				x1 = x1 + 1;
+			}
+			drawR(x1, y1);
+		}
+	}
+	else if (m > 1)
+	{
+		while (x0 < x1)
+		{
+			if (d < dx)
+			{
+				d += delE;
+				x0 = x0 + 1;
+				y0 = y0 + 1;
+			}
+			else
+			{
+				y0 = y0 + 1;
+				d -= x0;
+			}
+			drawR(x0, y0);
+		}
+		while (x1 < x0)
+		{
+			if (d <= 0)
+			{
+				d += delNE;
+				x1 = x1 + 1;
+				y1 = y1 + 1;
+			}
+			else
+			{
+				d += delE;
+				x1 = x1 + 1;
+			}
+			drawR(x1, y1);
+		}
+	}
+	else
+	{
+		while (x0 < x1)
+		{
+			if (d >= 0)
+			{
+				d += delE;
+				x0 = x0 + 1;
+			}
+			else
+			{
+				d -= delNE;
+				x0 = x0 + 1;
+				y0 = y0 - 1;
+			}
+			drawR(x0, y0);
+		}
+		while (x1 < x0)
+		{
+			if (d >= 0)
+			{
+				d -= delNE;
+				x1 = x1 + 1;
+				y1 = y1 - 1;
+			}
+			else
+			{
+				d += delE;
+				x1 = x1 + 1;
+			}
+			drawR(x1, y1);
+		}
+
+	}
+
 }
 void myMouse(int button, int state, int x, int y)
 {
